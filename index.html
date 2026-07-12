@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>A Letter For You</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,500&family=Outfit:wght@300;400;500;600&family=Caveat:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --wine: #2B0B1F;
+    --wine-deep: #1A0714;
+    --wine-light: #4A1030;
+    --rose: #FF4568;
+    --rose-soft: #FF8FA3;
+    --gold: #F2B705;
+    --gold-soft: #F7D774;
+    --cream: #FFF3E4;
+    --ink: #2B0B1F;
+    --font-display: "Fraunces", serif;
+    --font-body: "Outfit", sans-serif;
+    --font-script: "Caveat", cursive;
+  }
+
+  *{ box-sizing: border-box; }
+
+  html, body{
+    margin:0; padding:0; height:100%;
+    background: var(--wine-deep);
+    font-family: var(--font-body);
+    color: var(--cream);
+    overflow-x: hidden;
+  }
+
+  body{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding: 24px;
+    position: relative;
+  }
+
+  .bg-glow{
+    position: fixed; inset:0; z-index:0; pointer-events:none;
+    background:
+      radial-gradient(600px 400px at 15% 10%, rgba(255,69,104,0.16), transparent 60%),
+      radial-gradient(500px 500px at 85% 85%, rgba(242,183,5,0.10), transparent 60%),
+      var(--wine-deep);
+  }
+
+  .stage{
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 460px;
+  }
+
+  .screen{ display:none; }
+  .screen.active{ display:block; animation: fadeUp .5s ease; }
+
+  @keyframes fadeUp{
+    from{ opacity:0; transform: translateY(14px); }
+    to{ opacity:1; transform: translateY(0); }
+  }
+
+  .card{
+    background: var(--cream);
+    color: var(--ink);
+    border-radius: 6px;
+    box-shadow: 0 30px 60px -20px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,0,0,0.04);
+    padding: 40px 32px;
+    position: relative;
+  }
+
+  .eyebrow{
+    font-family: var(--font-body);
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--rose);
+    font-weight: 600;
+    margin: 0 0 10px;
+  }
+
+  h1, h2{
+    font-family: var(--font-display);
+    font-weight: 500;
+    line-height: 1.15;
+    margin: 0 0 14px;
+  }
+
+  h1{ font-size: clamp(28px, 7vw, 36px); }
+  h2{ font-size: clamp(22px, 6vw, 27px); }
+
+  p{ line-height: 1.55; margin: 0 0 18px; color: rgba(43,11,31,0.8); }
+
+  label{
+    display:block;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: rgba(43,11,31,0.55);
+    margin: 0 0 6px;
+  }
+
+  .field{ margin-bottom: 18px; }
+
+  input[type=text], textarea{
+    width: 100%;
+    font-family: var(--font-body);
+    font-size: 16px;
+    padding: 12px 14px;
+    border-radius: 4px;
+    border: 1.5px solid rgba(43,11,31,0.15);
+    background: #fff;
+    color: var(--ink);
+    outline: none;
+    transition: border-color .15s ease;
+  }
+  input[type=text]:focus, textarea:focus{ border-color: var(--rose); }
+  textarea{ resize: vertical; min-height: 84px; font-family: var(--font-body); }
+
+  .hint{ font-size: 12px; color: rgba(43,11,31,0.45); margin-top: 6px; }
+
+  button{ font-family: var(--font-body); cursor: pointer; border: none; outline: none; background:none; }
+  button:focus-visible{ outline: 3px solid var(--gold); outline-offset: 2px; }
+
+  .btn-primary{
+    width: 100%;
+    background: var(--rose);
+    color: var(--cream);
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: 0.02em;
+    padding: 15px 20px;
+    border-radius: 4px;
+    transition: transform .15s ease, background .15s ease;
+  }
+  .btn-primary:hover{ background: #ff2f52; transform: translateY(-1px); }
+  .btn-primary:active{ transform: translateY(0); }
+
+  .btn-secondary{
+    width: 100%;
+    background: transparent;
+    color: var(--ink);
+    font-weight: 600;
+    font-size: 14px;
+    padding: 13px 20px;
+    border-radius: 4px;
+    border: 1.5px solid rgba(43,11,31,0.18);
+    margin-top: 10px;
+  }
+
+  .btn-ghost{
+    background: none;
+    color: var(--rose);
+    font-weight: 600;
+    font-size: 13px;
+    padding: 8px;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    display:block;
+    margin: 0 auto;
+  }
+
+  .step-nav{ display:flex; justify-content:space-between; align-items:center; margin-bottom: 4px; }
+  .back-link{ color: rgba(43,11,31,0.45); font-size: 13px; font-weight: 500; text-decoration:none; }
+
+  .envelope-wrap{ display:flex; flex-direction:column; align-items:center; text-align:center; gap: 22px; }
+  .envelope-wrap .eyebrow{ text-align:center; }
+
+  .envelope{
+    width: 280px; max-width: 78vw; aspect-ratio: 3/2;
+    position: relative; cursor: pointer;
+    filter: drop-shadow(0 20px 35px rgba(0,0,0,0.5));
+  }
+  .env-body{ position:absolute; inset:0; background: var(--cream); border-radius: 4px; overflow: hidden; }
+  .env-body::before{
+    content:"";
+    position:absolute; inset:0;
+    background:
+      linear-gradient(135deg, transparent 49.3%, rgba(43,11,31,0.06) 50%, transparent 50.7%),
+      linear-gradient(-135deg, transparent 49.3%, rgba(43,11,31,0.06) 50%, transparent 50.7%);
+  }
+  .env-address{
+    position:absolute; left: 50%; top: 62%; transform: translate(-50%,-50%);
+    font-family: var(--font-script); font-size: 26px; color: var(--wine);
+    white-space: nowrap; max-width: 90%; overflow:hidden; text-overflow: ellipsis;
+  }
+  .env-flap{
+    position:absolute; top:0; left:0; right:0; height: 55%;
+    background: linear-gradient(160deg, #FFF8EF, var(--cream));
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    transform-origin: top center;
+    transition: transform .7s cubic-bezier(.6,.05,.25,1);
+    z-index: 3;
+  }
+  .envelope.open .env-flap{ transform: rotateX(180deg); }
+  .seal{
+    position:absolute; left:50%; top: 48%; transform: translate(-50%,-50%);
+    width: 64px; height:64px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #ff5f7d, var(--rose) 55%, #c5233f 100%);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.35), inset 0 -4px 8px rgba(0,0,0,0.25), inset 0 3px 6px rgba(255,255,255,0.25);
+    display:flex; align-items:center; justify-content:center; z-index: 4;
+    transition: transform .35s ease, opacity .35s ease;
+  }
+  .seal svg{ width: 28px; height:28px; }
+  .envelope.open .seal{ transform: translate(-50%,-50%) scale(0.4) rotate(25deg); opacity: 0; }
+  .envelope:not(.open):hover .seal{ transform: translate(-50%,-50%) scale(1.06); }
+  .tap-hint{ font-size: 13px; color: rgba(255,243,228,0.55); letter-spacing: 0.03em; }
+
+  .letter-card{ text-align:left; }
+  .salutation{ font-family: var(--font-display); font-style: italic; font-size: 20px; color: var(--rose); margin-bottom: 4px; }
+  .message-body{ font-size: 16px; color: rgba(43,11,31,0.85); white-space: pre-wrap; }
+  .question{ font-family: var(--font-display); font-size: clamp(22px,6vw,27px); margin: 22px 0 22px; color: var(--ink); }
+
+  .polaroid{
+    position:absolute; top:-18px; right:-14px;
+    width: 92px; background:#fff; padding: 6px 6px 18px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    transform: rotate(7deg); border-radius: 2px;
+  }
+  .polaroid img{ width:100%; height:78px; object-fit:cover; display:block; border-radius:1px; }
+
+  .actions{ display:flex; gap: 14px; align-items:center; position: relative; min-height: 56px; }
+  .btn-yes{
+    background: var(--rose); color: var(--cream); font-weight: 600; font-size: 15px;
+    padding: 15px 26px; border-radius: 4px; flex: 1;
+    transition: transform .15s ease, background .15s ease;
+  }
+  .btn-yes:hover{ background:#ff2f52; transform: translateY(-1px); }
+  .btn-no{
+    background: transparent; color: rgba(43,11,31,0.55); font-weight: 500; font-size: 15px;
+    padding: 15px 22px; border-radius: 4px; border: 1.5px solid rgba(43,11,31,0.18);
+    position: relative; transition: left .18s ease, top .18s ease;
+  }
+  .no-count{ font-size: 12px; color: rgba(43,11,31,0.4); margin-top: 10px; min-height: 16px; }
+
+  .fav-upload{
+    display:flex; align-items:center; gap:14px;
+    border: 1.5px dashed rgba(43,11,31,0.22);
+    border-radius: 6px; padding: 12px; cursor:pointer; margin-bottom: 22px;
+    background: rgba(255,69,104,0.03);
+  }
+  .fav-upload-thumb{
+    width: 64px; height:64px; border-radius: 50%; background: rgba(43,11,31,0.06);
+    display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0;
+    border: 2px solid rgba(43,11,31,0.1);
+  }
+  .fav-upload-thumb img{ width:100%; height:100%; object-fit:cover; }
+  .fav-upload-text strong{ display:block; font-size: 14px; }
+  .fav-upload-text span{ font-size: 12px; color: rgba(43,11,31,0.5); }
+
+  .tl-row{
+    display:flex; gap: 12px; align-items:flex-start;
+    padding: 14px 0; border-bottom: 1px dashed rgba(43,11,31,0.15);
+  }
+  .tl-row:first-of-type{ padding-top: 0; }
+  .tl-photo-box{
+    width: 56px; height:56px; border-radius: 6px; flex-shrink:0;
+    background: rgba(43,11,31,0.05); border: 1.5px dashed rgba(43,11,31,0.22);
+    display:flex; align-items:center; justify-content:center; cursor:pointer; overflow:hidden;
+    font-size: 20px; color: rgba(43,11,31,0.35);
+  }
+  .tl-photo-box img{ width:100%; height:100%; object-fit:cover; }
+  .tl-fields{ flex:1; display:flex; flex-direction:column; gap:8px; }
+  .tl-fields input{
+    width:100%; font-family: var(--font-body); font-size: 14px;
+    padding: 9px 11px; border-radius: 4px; border: 1.5px solid rgba(43,11,31,0.15);
+    background:#fff; color:var(--ink); outline:none;
+  }
+  .tl-fields input:focus{ border-color: var(--rose); }
+  .tl-remove{
+    color: rgba(43,11,31,0.35); font-size: 20px; line-height:1; padding: 4px 6px; flex-shrink:0;
+  }
+  .tl-remove:hover{ color: var(--rose); }
+
+  .result-card{ text-align:center; }
+  .result-locket{
+    width: 96px; height:96px; border-radius: 50%; margin: 0 auto 16px;
+    border: 3px solid var(--gold); padding: 4px; overflow:hidden;
+    background: var(--cream);
+  }
+  .result-locket img{ width:100%; height:100%; object-fit:cover; border-radius:50%; display:block; }
+  .result-seal{
+    width: 70px; height:70px; margin: 0 auto 18px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #ff5f7d, var(--rose) 55%, #c5233f 100%);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.35), inset 0 -4px 8px rgba(0,0,0,0.25), inset 0 3px 6px rgba(255,255,255,0.25);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .result-seal svg{ width:32px; height:32px; }
+  .names{ font-family: var(--font-display); font-size: clamp(24px,7vw,32px); margin: 6px 0 6px; }
+  .names .amp{ font-style: italic; color: var(--rose); margin: 0 8px; }
+  .result-date{ font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(43,11,31,0.45); margin-bottom: 22px; }
+  .result-message{
+    font-family: var(--font-script); font-size: 22px; color: rgba(43,11,31,0.85); line-height: 1.4;
+    padding: 18px 10px; border-top: 1px dashed rgba(43,11,31,0.2); border-bottom: 1px dashed rgba(43,11,31,0.2);
+    margin-bottom: 6px; white-space: pre-wrap;
+  }
+  .result-actions{ display:flex; flex-direction:column; gap:10px; margin-top: 22px; }
+
+  .timeline-section{ margin-top: 22px; }
+  .timeline-section .card{ padding: 34px 28px; }
+  .timeline-title{ font-family: var(--font-display); font-size: 22px; text-align:center; margin-bottom: 26px; }
+  .timeline-list{ position:relative; padding-left: 26px; }
+  .timeline-list::before{
+    content:""; position:absolute; left: 7px; top: 6px; bottom: 6px; width: 2px;
+    background: repeating-linear-gradient(to bottom, rgba(43,11,31,0.2) 0 4px, transparent 4px 9px);
+  }
+  .timeline-item{ position: relative; padding-bottom: 26px; }
+  .timeline-item:last-child{ padding-bottom: 0; }
+  .timeline-dot{
+    position:absolute; left: -26px; top: 3px; width: 14px; height:14px; border-radius:50%;
+    background: var(--gold); border: 2px solid var(--cream); box-shadow: 0 0 0 1px rgba(43,11,31,0.15);
+  }
+  .timeline-photo{ width:100%; max-height: 220px; object-fit:cover; border-radius: 6px; margin-bottom: 10px; display:block; }
+  .timeline-label{ font-size: 11px; letter-spacing: 0.08em; text-transform:uppercase; color: var(--rose); font-weight:600; margin-bottom: 4px; }
+  .timeline-caption{ font-size: 15px; color: rgba(43,11,31,0.8); line-height:1.4; }
+
+  .confetti{ position: fixed; inset:0; pointer-events:none; z-index: 50; overflow: hidden; }
+  .confetto{ position:absolute; top: -20px; width: 8px; height: 14px; opacity: 0.9; animation: fall linear forwards; }
+  @keyframes fall{ to{ transform: translateY(110vh) rotate(600deg); opacity: 0.4; } }
+
+  @media (prefers-reduced-motion: reduce){
+    .env-flap, .seal, .btn-no, .screen.active{ transition:none !important; animation:none !important; }
+    .confetto{ animation:none !important; display:none !important; }
+  }
+
+  footer{ text-align:center; margin-top: 18px; font-size: 11px; letter-spacing: 0.04em; color: rgba(255,243,228,0.3); }
+  .visually-hidden{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+</style>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+
+<div class="stage">
+
+  <section class="screen active" id="screen-setup">
+    <div class="card">
+      <p class="eyebrow">Step 1 · Write it</p>
+      <h1>Craft a little proposal</h1>
+      <p>Fill this in, then add photos, then you'll get a sealed letter to open and send. Nothing leaves your browser — nothing is saved anywhere.</p>
+
+      <div class="field">
+        <label for="input-name">Their name</label>
+        <input type="text" id="input-name" placeholder="e.g. Priya" maxlength="40">
+      </div>
+
+      <div class="field">
+        <label for="input-from">Your name (optional)</label>
+        <input type="text" id="input-from" placeholder="e.g. Arjun" maxlength="40">
+      </div>
+
+      <div class="field">
+        <label for="input-message">Your message</label>
+        <textarea id="input-message" maxlength="220" placeholder="Reference something real — an inside joke, a night you both remember. Specific beats poetic."></textarea>
+        <div class="hint">A sentence or two is plenty. Save the essay for later.</div>
+      </div>
+
+      <div class="field">
+        <label for="input-question">The question</label>
+        <input type="text" id="input-question" placeholder="Will you be my Valentine?" maxlength="60">
+      </div>
+
+      <button class="btn-primary" id="btn-to-photos">Add photos →</button>
+    </div>
+  </section>
+
+  <section class="screen" id="screen-photos">
+    <div class="card">
+      <div class="step-nav">
+        <a href="#" class="back-link" id="back-to-setup">← Back</a>
+        <p class="eyebrow" style="margin:0;">Step 2 · Add photos</p>
+      </div>
+      <h2>Your favourite photo</h2>
+      <p>Shown pinned to the letter and in the final card. Totally optional.</p>
+
+      <label class="fav-upload" id="fav-upload-box">
+        <div class="fav-upload-thumb" id="fav-thumb">📷</div>
+        <div class="fav-upload-text">
+          <strong id="fav-upload-title">Choose a photo</strong>
+          <span>JPG or PNG, any size</span>
+        </div>
+        <input type="file" accept="image/*" id="input-fav-photo" class="visually-hidden">
+      </label>
+
+      <h2>A little timeline</h2>
+      <p>Add a few moments — a first date, an inside joke, a trip. Each one gets a photo, a label, and a caption.</p>
+
+      <div id="tl-list"></div>
+
+      <button class="btn-ghost" id="btn-add-moment" type="button">+ Add another moment</button>
+
+      <button class="btn-primary" id="btn-to-envelope" style="margin-top:22px;">Seal the letter →</button>
+      <button class="btn-secondary" id="btn-skip-photos" type="button">Skip photos</button>
+    </div>
+  </section>
+
+  <section class="screen" id="screen-envelope">
+    <div class="envelope-wrap">
+      <p class="eyebrow">Delivery for</p>
+      <div class="envelope" id="envelope" role="button" tabindex="0" aria-label="Open the letter">
+        <div class="env-body"><div class="env-address" id="env-address">Someone Special</div></div>
+        <div class="env-flap"></div>
+        <div class="seal">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-7.5-4.7-10-9.3C.4 8.2 2 4.5 5.6 4c2-.3 3.7.6 4.9 2.2C11.7 4.6 13.4 3.7 15.4 4c3.6.5 5.2 4.2 3.6 7.7C16.5 16.3 12 21 12 21z" fill="#fff" opacity="0.9"/></svg>
+        </div>
+      </div>
+      <p class="tap-hint">Tap the seal to open</p>
+    </div>
+  </section>
+
+  <section class="screen" id="screen-letter">
+    <div class="card letter-card">
+      <div class="polaroid" id="letter-polaroid" style="display:none;"><img id="letter-polaroid-img" alt=""></div>
+      <div class="salutation" id="letter-salutation">Dear Someone,</div>
+      <div class="message-body" id="letter-message"></div>
+      <div class="question" id="letter-question">Will you be my Valentine?</div>
+      <div class="actions">
+        <button class="btn-yes" id="btn-yes">Yes</button>
+        <button class="btn-no" id="btn-no">No</button>
+      </div>
+      <div class="no-count" id="no-count"></div>
+    </div>
+  </section>
+
+  <section class="screen" id="screen-result">
+    <div class="card result-card">
+      <div class="result-locket" id="result-locket" style="display:none;"><img id="result-locket-img" alt=""></div>
+      <div class="result-seal" id="result-seal">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M12 21s-7.5-4.7-10-9.3C.4 8.2 2 4.5 5.6 4c2-.3 3.7.6 4.9 2.2C11.7 4.6 13.4 3.7 15.4 4c3.6.5 5.2 4.2 3.6 7.7C16.5 16.3 12 21 12 21z" fill="#fff"/></svg>
+      </div>
+      <p class="eyebrow">Sealed with love</p>
+      <div class="names"><span id="result-from">You</span><span class="amp">&amp;</span><span id="result-name">Someone</span></div>
+      <div class="result-date" id="result-date"></div>
+      <div class="result-message" id="result-message"></div>
+      <div class="result-actions">
+        <button class="btn-primary" id="btn-restart">Make another letter</button>
+      </div>
+    </div>
+
+    <div class="timeline-section" id="timeline-section" style="display:none;">
+      <div class="card">
+        <div class="timeline-title">Our story so far</div>
+        <div class="timeline-list" id="timeline-list-view"></div>
+      </div>
+    </div>
+  </section>
+
+  <footer>made with a little bit of nerve</footer>
+</div>
+
+<script>
+(function(){
+  const screens = {
+    setup: document.getElementById('screen-setup'),
+    photos: document.getElementById('screen-photos'),
+    envelope: document.getElementById('screen-envelope'),
+    letter: document.getElementById('screen-letter'),
+    result: document.getElementById('screen-result'),
+  };
+
+  function show(name){
+    Object.values(screens).forEach(s => s.classList.remove('active'));
+    screens[name].classList.add('active');
+    window.scrollTo(0,0);
+  }
+
+  let data = { name:'', from:'', message:'', question:'' };
+  let favoritePhoto = null;
+  let tlEntries = [];
+  let tlCounter = 0;
+
+  function resizeImage(file, maxDim, quality){
+    return new Promise(function(resolve, reject){
+      const reader = new FileReader();
+      reader.onload = function(e){
+        const img = new Image();
+        img.onload = function(){
+          let w = img.width, h = img.height;
+          if(w > h && w > maxDim){ h = Math.round(h * (maxDim / w)); w = maxDim; }
+          else if(h >= w && h > maxDim){ w = Math.round(w * (maxDim / h)); h = maxDim; }
+          const canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        };
+        img.onerror = reject;
+        img.src = e.target.result;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  document.getElementById('btn-to-photos').addEventListener('click', function(){
+    const nameEl = document.getElementById('input-name');
+    const name = nameEl.value.trim();
+    if(!name){
+      nameEl.focus();
+      nameEl.style.borderColor = '#FF4568';
+      return;
+    }
+    data.name = name;
+    data.from = document.getElementById('input-from').value.trim() || 'Someone who likes you';
+    data.message = document.getElementById('input-message').value.trim() || "I've been meaning to tell you this for a while now.";
+    data.question = document.getElementById('input-question').value.trim() || 'Will you be my Valentine?';
+    show('photos');
+  });
+
+  document.getElementById('back-to-setup').addEventListener('click', function(e){
+    e.preventDefault();
+    show('setup');
+  });
+
+  const favInput = document.getElementById('input-fav-photo');
+  const favThumb = document.getElementById('fav-thumb');
+  const favTitle = document.getElementById('fav-upload-title');
+
+  favInput.addEventListener('change', function(){
+    const file = favInput.files[0];
+    if(!file) return;
+    resizeImage(file, 700, 0.85).then(function(dataUrl){
+      favoritePhoto = dataUrl;
+      favThumb.innerHTML = '<img src="' + dataUrl + '" alt="">';
+      favTitle.textContent = 'Looks good — tap to change';
+    });
+  });
+
+  const tlList = document.getElementById('tl-list');
+
+  function addTimelineRow(){
+    const id = 'tl' + (tlCounter++);
+    tlEntries.push({ id: id, photo: null, label: '', caption: '' });
+
+    const row = document.createElement('div');
+    row.className = 'tl-row';
+    row.dataset.id = id;
+    row.innerHTML =
+      '<label class="tl-photo-box">' +
+        '<span class="tl-icon">＋</span>' +
+        '<input type="file" accept="image/*" class="visually-hidden tl-file-input">' +
+      '</label>' +
+      '<div class="tl-fields">' +
+        '<input type="text" class="tl-label-input" maxlength="40" placeholder="e.g. Our first date · March 2024">' +
+        '<input type="text" class="tl-caption-input" maxlength="80" placeholder="A short caption">' +
+      '</div>' +
+      '<button type="button" class="tl-remove" aria-label="Remove this moment">×</button>';
+
+    const photoBox = row.querySelector('.tl-photo-box');
+    const fileInput = row.querySelector('.tl-file-input');
+    const labelInput = row.querySelector('.tl-label-input');
+    const captionInput = row.querySelector('.tl-caption-input');
+    const removeBtn = row.querySelector('.tl-remove');
+
+    fileInput.addEventListener('change', function(){
+      const file = fileInput.files[0];
+      if(!file) return;
+      resizeImage(file, 380, 0.8).then(function(dataUrl){
+        const entry = tlEntries.find(function(e){ return e.id === id; });
+        entry.photo = dataUrl;
+        photoBox.innerHTML = '<img src="' + dataUrl + '" alt="">';
+        photoBox.appendChild(fileInput);
+      });
+    });
+
+    labelInput.addEventListener('input', function(){
+      tlEntries.find(function(e){ return e.id === id; }).label = labelInput.value.trim();
+    });
+    captionInput.addEventListener('input', function(){
+      tlEntries.find(function(e){ return e.id === id; }).caption = captionInput.value.trim();
+    });
+    removeBtn.addEventListener('click', function(){
+      tlEntries = tlEntries.filter(function(e){ return e.id !== id; });
+      row.remove();
+    });
+
+    tlList.appendChild(row);
+  }
+
+  document.getElementById('btn-add-moment').addEventListener('click', addTimelineRow);
+  addTimelineRow();
+  addTimelineRow();
+
+  function proceedToEnvelope(){
+    document.getElementById('env-address').textContent = data.name;
+    document.getElementById('letter-salutation').textContent = 'Dear ' + data.name + ',';
+    document.getElementById('letter-message').textContent = data.message;
+    document.getElementById('letter-question').textContent = data.question;
+
+    const polaroid = document.getElementById('letter-polaroid');
+    if(favoritePhoto){
+      document.getElementById('letter-polaroid-img').src = favoritePhoto;
+      polaroid.style.display = 'block';
+    } else {
+      polaroid.style.display = 'none';
+    }
+    show('envelope');
+  }
+  document.getElementById('btn-to-envelope').addEventListener('click', proceedToEnvelope);
+  document.getElementById('btn-skip-photos').addEventListener('click', proceedToEnvelope);
+
+  const envelope = document.getElementById('envelope');
+  function openEnvelope(){
+    if(envelope.classList.contains('open')) return;
+    envelope.classList.add('open');
+    setTimeout(() => show('letter'), 550);
+  }
+  envelope.addEventListener('click', openEnvelope);
+  envelope.addEventListener('keydown', function(e){
+    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); openEnvelope(); }
+  });
+
+  const btnNo = document.getElementById('btn-no');
+  const actions = document.querySelector('.actions');
+  const noCount = document.getElementById('no-count');
+  let dodges = 0;
+  const dodgeLines = [
+    "nope.", "try again?", "not quite.", "so close.", "almost had it.",
+    "keep trying.", "it's playing hard to get.", "one more try."
+  ];
+
+  function dodge(){
+    dodges++;
+    const bounds = actions.getBoundingClientRect();
+    const btnW = btnNo.offsetWidth, btnH = btnNo.offsetHeight;
+    const maxX = Math.max(bounds.width - btnW - 4, 4);
+    const x = Math.random() * maxX;
+    const y = (Math.random() * 40) - 20;
+    btnNo.style.position = 'absolute';
+    btnNo.style.left = x + 'px';
+    btnNo.style.top = y + 'px';
+    noCount.textContent = dodges === 1
+      ? "the 'no' button doesn't want to be pressed"
+      : dodgeLines[Math.min(dodges-2, dodgeLines.length-1)] + ' (' + dodges + ')';
+  }
+
+  btnNo.addEventListener('mouseenter', dodge);
+  btnNo.addEventListener('click', function(e){ e.preventDefault(); dodge(); });
+  btnNo.addEventListener('touchstart', function(e){ e.preventDefault(); dodge(); }, {passive:false});
+
+  document.getElementById('btn-yes').addEventListener('click', function(){
+    document.getElementById('result-from').textContent = data.from;
+    document.getElementById('result-name').textContent = data.name;
+    document.getElementById('result-message').textContent = data.message;
+    const today = new Date();
+    document.getElementById('result-date').textContent = today.toLocaleDateString(undefined, {year:'numeric', month:'long', day:'numeric'});
+
+    const locket = document.getElementById('result-locket');
+    const seal = document.getElementById('result-seal');
+    if(favoritePhoto){
+      document.getElementById('result-locket-img').src = favoritePhoto;
+      locket.style.display = 'block';
+      seal.style.display = 'none';
+    } else {
+      locket.style.display = 'none';
+      seal.style.display = 'flex';
+    }
+
+    renderTimelineView();
+    show('result');
+    burstConfetti();
+  });
+
+  function renderTimelineView(){
+    const section = document.getElementById('timeline-section');
+    const view = document.getElementById('timeline-list-view');
+    view.innerHTML = '';
+    const populated = tlEntries.filter(function(e){ return e.photo || e.label || e.caption; });
+    if(populated.length === 0){ section.style.display = 'none'; return; }
+    populated.forEach(function(e){
+      const item = document.createElement('div');
+      item.className = 'timeline-item';
+      let html = '<div class="timeline-dot"></div>';
+      if(e.photo) html += '<img class="timeline-photo" src="' + e.photo + '" alt="">';
+      if(e.label) html += '<div class="timeline-label">' + escapeHtml(e.label) + '</div>';
+      if(e.caption) html += '<div class="timeline-caption">' + escapeHtml(e.caption) + '</div>';
+      item.innerHTML = html;
+      view.appendChild(item);
+    });
+    section.style.display = 'block';
+  }
+
+  function escapeHtml(str){
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
+  document.getElementById('btn-restart').addEventListener('click', function(){
+    dodges = 0;
+    btnNo.style.position = ''; btnNo.style.left = ''; btnNo.style.top = '';
+    noCount.textContent = '';
+    envelope.classList.remove('open');
+
+    document.getElementById('input-name').value = '';
+    document.getElementById('input-from').value = '';
+    document.getElementById('input-message').value = '';
+    document.getElementById('input-question').value = '';
+
+    favoritePhoto = null;
+    favThumb.innerHTML = '📷';
+    favTitle.textContent = 'Choose a photo';
+    favInput.value = '';
+
+    tlEntries = [];
+    tlList.innerHTML = '';
+    addTimelineRow();
+    addTimelineRow();
+
+    show('setup');
+  });
+
+  function burstConfetti(){
+    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const wrap = document.createElement('div');
+    wrap.className = 'confetti';
+    document.body.appendChild(wrap);
+    const colors = ['#FF4568','#F2B705','#FF8FA3','#FFF3E4'];
+    for(let i=0;i<60;i++){
+      const c = document.createElement('div');
+      c.className = 'confetto';
+      c.style.left = Math.random()*100 + 'vw';
+      c.style.background = colors[Math.floor(Math.random()*colors.length)];
+      c.style.animationDuration = (2.5 + Math.random()*2) + 's';
+      c.style.animationDelay = (Math.random()*0.6) + 's';
+      c.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+      wrap.appendChild(c);
+    }
+    setTimeout(() => wrap.remove(), 5000);
+  }
+})();
+</script>
+
+</body>
+</html>
